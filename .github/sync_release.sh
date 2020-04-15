@@ -3,7 +3,7 @@
 set -euo pipefail
 
 UPSTREAM_REPO="https://github.com/MiSTer-devel/Arcade-ATetris_MiSTer.git"
-CORE_NAME="Arcade_AtariTetris"
+CORE_NAME="Arcade-AtariTetris"
 MAIN_BRANCH="master"
 
 echo "Fetching upstream:"
