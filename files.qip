@@ -1,3 +1,4 @@
+set_global_assignment -name VERILOG_FILE src/joydb9md.v
 set_global_assignment -name QIP_FILE src/Pokey/Pokey.qip
 set_global_assignment -name QIP_FILE src/t65/t65.qip
 set_global_assignment -name VERILOG_FILE src/FPGA_ATetris.v

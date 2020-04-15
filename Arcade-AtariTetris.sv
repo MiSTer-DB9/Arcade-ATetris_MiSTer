@@ -69,12 +69,21 @@ module emu
 	// 1 - D-/TX
 	// 2..6 - USR2..USR6
 	// Set USER_OUT to 1 to read from USER_IN.
-	input   [6:0] USER_IN,
-	output  [6:0] USER_OUT
+	output	USER_OSD,
+	output	USER_MODE,
+	input	[7:0] USER_IN,
+	output	[7:0] USER_OUT
 );
 
 assign VGA_F1	  = 0;
-assign USER_OUT  = '1;
+
+wire   joy_split, joy_mdsel;
+wire   [5:0] joy_in = {USER_IN[6],USER_IN[3],USER_IN[5],USER_IN[7],USER_IN[1],USER_IN[2]};
+assign USER_OUT  = |status[31:30] ? {3'b111,joy_split,3'b111,joy_mdsel} : '1;
+assign USER_MODE = |status[31:30] ;
+assign USER_OSD  = joydb9md_1[7] & joydb9md_1[5]; // A�adir esto para OSD
+
+
 assign LED_USER  = ioctl_download;
 assign LED_DISK  = 0;
 assign LED_POWER = 0;
@@ -86,16 +95,17 @@ assign HDMI_ARY = status[1] ? 8'd9  : 8'd3;
 localparam CONF_STR = {
 	"A.ATetris;;",
 	"F,rom;", // allow loading of alternate ROMs
-	"-;",
+"-;",
 	"H0O1,Aspect Ratio,Original,Wide;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
-	"-;",
+	"OUV,Serial SNAC DB9MD,Off,1 Player,2 Players;",
+"-;",
 	"ODG,Diagonal,Default,Change Direction,Keep Direction,Vertical,Horizontal,Stop;",
 	"OH,Self-Test,Off,On;",
-	"-;",
+"-;",
 	"O8C,Analog Video H-Pos,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;",
 	"OIK,Analog Video V-Pos,0,1,2,3,4,5,6,7;",
-	"-;",
+"-;",
 	"R0,Reset;",
 	"J1,Rotate,Coin;",
 	"V,v",`BUILD_DATE
@@ -128,7 +138,7 @@ pll pll
 wire [31:0] status;
 wire  [1:0] buttons;
 wire        forced_scandoubler;
-wire			direct_video;
+wire		direct_video;
 
 wire        ioctl_download;
 wire        ioctl_wr;
@@ -136,9 +146,41 @@ wire [24:0] ioctl_addr;
 wire  [7:0] ioctl_dout;
 
 wire [10:0] ps2_key;
-wire [15:0] joystk1, joystk2;
+wire [15:0] joystk1_USB, joystk2_USB;
 
 wire [21:0] gamma_bus;
+
+wire [15:0] joystk1 = |status[31:30] ? {
+	joydb9md_1[8] | (joydb9md_1[7] & joydb9md_1[4]),// Mode or Start + B-> 5 * Coin
+	joydb9md_1[6] | joydb9md_1[7],					// btn_fireA	-> 4 * A / Start
+	joydb9md_1[3],									// btn_up		-> 3 * U
+	joydb9md_1[2],									// btn_down		-> 2 * D
+	joydb9md_1[1],									// btn_left		-> 1 * L
+	joydb9md_1[0],									// btn_righ		-> 0 * R 
+	} 
+	: joystk1_USB;
+
+wire [15:0] joystk2 =  status[31]    ? {
+	joydb9md_2[8] | (joydb9md_2[7] & joydb9md_2[4]),// Mode or Start + B-> 5 * Coin
+	joydb9md_2[6] | joydb9md_1[7], 					// btn_fireA	-> 4 * A / Start
+	joydb9md_2[3],									// btn_up		-> 3 * U
+	joydb9md_2[2],									// btn_down		-> 2 * D
+	joydb9md_2[1],									// btn_left		-> 1 * L
+	joydb9md_2[0],									// btn_right	-> 0 * R 
+	} 
+	: status[30] ? joystk1_USB : joystk2_USB;
+
+
+reg [15:0] joydb9md_1,joydb9md_2;
+joy_db9md joy_db9md
+(
+  .clk       ( clk_sys    ), //35-50MHz
+  .joy_split ( joy_split  ),
+  .joy_mdsel ( joy_mdsel  ),
+  .joy_in    ( joy_in     ),
+  .joystick1 ( joydb9md_1 ),
+  .joystick2 ( joydb9md_2 )	  
+);
 
 hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 (
@@ -161,8 +203,9 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 	.ioctl_addr(ioctl_addr),
 	.ioctl_dout(ioctl_dout),
 
-	.joystick_0(joystk1),
-	.joystick_1(joystk2),
+	.joystick_0(joystk1_USB),
+	.joystick_1(joystk2_USB),
+	.joy_raw({joydb9md_1[4],joydb9md_1[6],joydb9md_1[3:0]}),
 	.ps2_key(ps2_key)
 );
 
