@@ -153,6 +153,14 @@ wire SD_CS, SD_CLK, SD_MOSI;
 `endif
 
 `ifndef DUAL_SDRAM
+<<<<<<< HEAD
+	assign SDIO_DAT  = 4'bZZZZ;
+	assign SDIO_CLK  = 1'bZ;
+	assign SDIO_CMD  = 1'bZ;
+	//assign SD_SPI_CS = mcp_sdcd ? ((~VGA_EN & sog & ~cs1) ? 1'b1 : 1'bZ) : 1'bZ;
+`else
+	//assign SD_SPI_CS = 1'bZ;
+=======
 	assign SDIO_DAT[2:1]= 2'bZZ;
 	assign SDIO_DAT[3]  = SW[3] ? 1'bZ  : SD_CS;
 	assign SDIO_CLK     = SW[3] ? 1'bZ  : SD_CLK;
@@ -160,6 +168,7 @@ wire SD_CS, SD_CLK, SD_MOSI;
 	assign SD_SPI_CS    = mcp_sdcd ? ((~VGA_EN & sog & ~cs1) ? 1'b1 : 1'bZ) : SD_CS;
 `else
 	assign SD_SPI_CS    = mcp_sdcd ? 1'bZ : SD_CS;
+>>>>>>> Upstream/master
 `endif
 
 assign SD_SPI_CLK  = mcp_sdcd ? 1'bZ : SD_CLK;
@@ -1397,9 +1406,15 @@ wire  [1:0] btn;
 sync_fix sync_v(clk_vid, vs_emu, vs_fix);
 sync_fix sync_h(clk_vid, hs_emu, hs_fix);
 
+<<<<<<< HEAD
+assign audio_mix = 0;
+assign {ADC_SCK, ADC_SDI, ADC_CONVST} = 0;
 wire  [7:0] user_out, user_in;
 wire  [1:0] user_mode;
 wire        user_osd;
+=======
+wire  [6:0] user_out, user_in;
+>>>>>>> Upstream/master
 
 `ifndef USE_SDRAM
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = {39'bZ};
@@ -1543,6 +1558,11 @@ emu emu
 	.SDRAM2_EN(SW[3]),
 `endif
 
+<<<<<<< HEAD
+	.USER_OSD(user_osd),
+.USER_MODE(user_mode),
+.USER_OUT(user_out),
+=======
 `ifndef ARCADE_SYS
 	.BUTTONS(btn),
 	.OSD_STATUS(osd_status),
@@ -1564,10 +1584,8 @@ emu emu
 	.UART_DSR(uart_dtr),
 `endif
 
-	
-	.USER_OSD(user_osd),
-	.USER_MODE(user_mode),
 	.USER_OUT(user_out),
+>>>>>>> Upstream/master
 	.USER_IN(user_in)
 );
 

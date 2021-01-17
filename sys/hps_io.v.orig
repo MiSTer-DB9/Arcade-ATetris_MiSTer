@@ -313,8 +313,6 @@ always@(posedge clk_sys) begin : uio_block
 		end else begin
 
 			case(cmd)
- 				// Reading user_io raw joy
- 				'h0f: io_dout <= joy_raw;
 				// buttons and switches
 				'h01: cfg <= io_din;
 				'h02: if(byte_cnt==1) joystick_0[15:0] <= io_din; else joystick_0[31:16] <= io_din;
@@ -483,6 +481,20 @@ always@(posedge clk_sys) begin : uio_block
 							if (byte_cnt[1:0] == 3) byte_cnt <= 1;
 						end
 
+<<<<<<< HEAD
+					//CD set
+					'h35: case(byte_cnt)
+								1: cd_out[15:0]  <= io_din;
+								2: cd_out[31:16] <= io_din;
+								3: cd_out[47:32] <= io_din;
+	endcase
+ 				// Reading user_io raw joy
+				'h0f: io_dout <= joy_raw;
+// buttons and switches
+'h01: cfg <= io_din; 
+				endcase
+			end
+=======
 				// UART
 				'h3b: if(!byte_cnt[MAX_W:2]) begin
 							case(byte_cnt[1:0])
@@ -492,6 +504,7 @@ always@(posedge clk_sys) begin : uio_block
 							endcase
 						end
 			endcase
+>>>>>>> Upstream/master
 		end
 	end
 end
