@@ -254,9 +254,9 @@ wire [15:0] joystk1_USB, joystk2_USB;
 
 wire [21:0] gamma_bus;
 
-// CO F1/S U D L R 
-wire [31:0] joystk1 = joydb_1ena ? {joydb_1[11]|(joydb_1[10]&joydb_1[5]), joydb_1[4] | joydb_1[10],joydb_1[3:0]} : joystk1_USB;
-wire [31:0] joystk2 = joydb_2ena ? {joydb_2[11]|(joydb_2[10]&joydb_2[5]), joydb_2[4] | joydb_2[10],joydb_2[3:0]} : joydb_1ena ? joystk1_USB : joystk2_USB;
+// P C S2 S1 F U D L R 
+wire [31:0] joystk1 = joydb_1ena ? {joydb_1[11]|(joydb_1[10]&joydb_1[5]), 1'b0, joydb_1[10],joydb_1[4:0]} : joystk1_USB;
+wire [31:0] joystk2 = joydb_2ena ? {joydb_2[11]|(joydb_2[10]&joydb_2[5]), joydb_2[10], 1'b0,joydb_2[4:0]} : joydb_1ena ? joystk1_USB : joystk2_USB;
 
 wire [15:0] joydb_1 = JOY_FLAG[2] ? JOYDB9MD_1 : JOY_FLAG[1] ? JOYDB15_1 : '0;
 wire [15:0] joydb_2 = JOY_FLAG[2] ? JOYDB9MD_2 : JOY_FLAG[1] ? JOYDB15_2 : '0;
