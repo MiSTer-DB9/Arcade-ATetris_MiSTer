@@ -304,10 +304,10 @@ wire [21:0] gamma_bus;
 
 // P C S2 S1 F U D L R 
 // [MiSTer-DB9-Pro BEGIN] - DB controllers muted while OSD is open
-wire [31:0] joystk1 = joydb_1ena ? (OSD_STATUS ? 32'b0 : {joydb_1[11]|(joydb_1[10]&joydb_1[5]), 1'b0, joydb_1[10],joydb_1[4:0]}) : joystk1_USB;
+wire [31:0] joystk1 = joydb_1ena ? (OSD_STATUS ? 32'b0 : {joydb_1[11], 1'b0, joydb_1[10],joydb_1[4:0]}) : joystk1_USB;
 // [MiSTer-DB9-Pro END]
 // [MiSTer-DB9-Pro BEGIN] - DB controllers muted while OSD is open
-wire [31:0] joystk2 = joydb_2ena ? (OSD_STATUS ? 32'b0 : {joydb_2[11]|(joydb_2[10]&joydb_2[5]), joydb_2[10], 1'b0,joydb_2[4:0]}) : joydb_1ena ? joystk1_USB : joystk2_USB;
+wire [31:0] joystk2 = joydb_2ena ? (OSD_STATUS ? 32'b0 : {joydb_2[11], joydb_2[10], 1'b0,joydb_2[4:0]}) : joydb_1ena ? joystk1_USB : joystk2_USB;
 // [MiSTer-DB9-Pro END]
 
 
